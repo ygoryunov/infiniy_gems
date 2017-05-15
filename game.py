@@ -1,5 +1,4 @@
 import pygame
-import time
 from field import Field
 
 from const import *
@@ -48,5 +47,4 @@ def main():
 main()
 pygame.quit()
 quit()
-
 

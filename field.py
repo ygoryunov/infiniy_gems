@@ -1,13 +1,11 @@
-import pygame
-
 from const import *
 from thing import Thing
 
 
 class Field:
 
-    def __init__(self, pygame, surface, clock):
-        self.pygame = pygame
+    def __init__(self, pg, surface, clock):
+        self.pygame = pg
         self.surface = surface
         self.clock = clock
         self.grid = {}
@@ -23,7 +21,7 @@ class Field:
     def draw_grid(self, redraw_things=True):
         for x in range(1, GRID_X + 1):
             for y in range(1, GRID_Y + 1):
-                pygame.draw.rect(self.surface, BROWN, self.cell_rect(x, y), GRID_LINE_WIDTH)
+                self.pygame.draw.rect(self.surface, BROWN, self.cell_rect(x, y), GRID_LINE_WIDTH)
                 if redraw_things:
                     self.draw_thing(x, y)
 
@@ -56,18 +54,18 @@ class Field:
                             self.draw_thing(x, y, 0, dy - GRID_CELL_SIZE)
                         else:
                             self.draw_thing(x, y)
-                pygame.display.update()
+                self.pygame.display.update()
                 self.clock.tick(CLOCK_TICK)
             for y in range(1, GRID_Y+1):
                 for x in range(1, GRID_X + 1):
-                    self.grid[x,y].need_update = False
+                    self.grid[x, y].need_update = False
 
         return res
 
     def draw_thing(self, x, y, x_padding=0, y_padding=0):
         if self.grid[x, y].thing_type != 0:
-            pygame.draw.rect(self.surface, THING_COLORS[self.grid[x, y].thing_color],
-                             self.cell_rect(x, y, THING_PADDING, x_padding, y_padding), THING_LINE_HEIGHT)
+            self.pygame.draw.rect(self.surface, THING_COLORS[self.grid[x, y].thing_color],
+                                  self.cell_rect(x, y, THING_PADDING, x_padding, y_padding), THING_LINE_HEIGHT)
 
     def kaboom_things(self):
         # search for horizontal line
@@ -83,7 +81,7 @@ class Field:
                         collected_thing.append(self.grid[x, y])
                     else:
                         if line_len > 1:
-                            #3 or more in a row
+                            # 3 or more in a row
                             for t in collected_thing:
                                 t.x_line = line_len
                         line_len = 0
@@ -100,18 +98,17 @@ class Field:
             for y in range(1, GRID_Y + 1):
                 if self.grid[x, y].thing_type != 0:
                     if prev_thing.thing_color == self.grid[x, y].thing_color:
-                        line_len +=1
+                        line_len += 1
                         collected_thing.append(self.grid[x, y])
                     else:
                         if line_len > 1:
-                            #3 or more in a row
+                            # 3 or more in a row
                             for t in collected_thing:
                                 t.y_line = line_len
                         line_len = 0
                         prev_thing = self.grid[x, y]
                         collected_thing = [self.grid[x, y]]
             prev_thing = Thing()
-
 
         for y in range(1, GRID_Y + 1):
             for x in range(1, GRID_X + 1):
